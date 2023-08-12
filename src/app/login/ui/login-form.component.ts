@@ -17,7 +17,7 @@ import { LoginStatus } from '../data-access/login.store';
   template: `
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
       <ion-item lines="none">
-        <ion-icon color="light" slot="start" name="mail-outline"></ion-icon>
+        <ion-icon slot="start" name="mail-outline"></ion-icon>
         <ion-input
           formControlName="email"
           type="email"
@@ -25,11 +25,7 @@ import { LoginStatus } from '../data-access/login.store';
         ></ion-input>
       </ion-item>
       <ion-item lines="none">
-        <ion-icon
-          color="light"
-          slot="start"
-          name="lock-closed-outline"
-        ></ion-icon>
+        <ion-icon slot="start" name="lock-closed-outline"></ion-icon>
         <ion-input
           formControlName="password"
           type="password"
@@ -37,7 +33,16 @@ import { LoginStatus } from '../data-access/login.store';
         ></ion-input>
       </ion-item>
 
-      <ion-button type="submit" color="tertiary" expand="full">
+      <ion-badge *ngIf="loginStatus === 'error'" color="danger">
+        Could not log you in with those details.
+      </ion-badge>
+
+      <ion-button
+        type="submit"
+        color="tertiary"
+        expand="full"
+        [disabled]="loginStatus === 'authenticating'"
+      >
         Login
       </ion-button>
     </form>
