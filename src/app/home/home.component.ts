@@ -8,7 +8,9 @@ import {
 import { RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { combineLatest, map } from 'rxjs';
+import { MessageService } from '../shared/data-access/message.service';
 import { HomeStore } from './data-access/home.store';
+import { MessageInputComponentModule } from './ui/message-input.component';
 import { MessageListComponentModule } from './ui/message-list.component';
 
 @Component({
@@ -23,6 +25,11 @@ import { MessageListComponentModule } from './ui/message-list.component';
       <ion-content>
         <app-message-list [messages]="vm.messages"></app-message-list>
       </ion-content>
+      <ion-footer>
+        <app-message-input
+          (send)="messageService.addMessage($event)"
+        ></app-message-input>
+      </ion-footer>
     </ng-container>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -33,7 +40,10 @@ export class HomeComponent implements OnInit {
     map(([messages]) => ({ messages }))
   );
 
-  constructor(private store: HomeStore) {}
+  constructor(
+    private store: HomeStore,
+    protected messageService: MessageService
+  ) {}
 
   ngOnInit() {
     this.store.loadMessages();
@@ -46,6 +56,7 @@ export class HomeComponent implements OnInit {
     CommonModule,
     IonicModule,
     MessageListComponentModule,
+    MessageInputComponentModule,
     RouterModule.forChild([
       {
         path: '',
