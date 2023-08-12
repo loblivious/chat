@@ -8,14 +8,15 @@ import {
   orderBy,
   query,
 } from '@angular/fire/firestore';
-import { Observable, map } from 'rxjs';
+import { Observable, map, take } from 'rxjs';
 import { Message } from '../interfaces/message';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class MessageService {
-  constructor(private firestore: Firestore) {}
+  constructor(private firestore: Firestore, private authService: AuthService) {}
 
   getMessages() {
     const messagesCollection = query(
@@ -29,13 +30,16 @@ export class MessageService {
   }
 
   addMessage(message: string) {
-    const newMessage: Message = {
-      author: 'me@test.com',
-      content: message,
-      created: Date.now().toString(),
-    };
-
-    const messagesCollection = collection(this.firestore, 'messages');
-    addDoc(messagesCollection, newMessage);
+    this.authService.user$.pipe(take(1)).subscribe((user) => {
+      if (user?.email) {
+        const newMessage: Message = {
+          author: user.email,
+          content: message,
+          created: Date.now().toString(),
+        };
+        const messagesCollection = collection(this.firestore, 'messages');
+        addDoc(messagesCollection, newMessage);
+      }
+    });
   }
 }
